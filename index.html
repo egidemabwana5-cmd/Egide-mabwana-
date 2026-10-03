@@ -304,11 +304,16 @@ m.append(w);m.scrollTop=0}
 /* menu, édition */
 $('#bg').onclick=()=>$('#nv').classList.toggle('o');
 $('#nv').onclick=e=>{if(e.target.closest('a'))$('#nv').classList.remove('o')};
-$('#adm').onclick=()=>{E=true;try{localStorage.setItem('em_e','1')}catch(e){}render();scrollTo(0,0)};
+$('#adm').onclick=async()=>{const p=prompt('Mot de passe');if(!p)return;let ok=false;try{ok=await sha(p.toLowerCase().replace(/\s/g,''))===PH}catch(e){}
+if(!ok){alert('Mot de passe incorrect');return}E=true;try{localStorage.setItem('em_e','1')}catch(e){}
+const d=await load();if(d)S=Object.assign(S,d);render();scrollTo(0,0)};
 $('#fin').onclick=()=>{E=false;try{localStorage.removeItem('em_e')}catch(e){}render()};
 $('#pb').onclick=async e=>{const b=e.target,t=b.textContent;b.disabled=true;try{await pub(b);alert('Publié ! Tout le monde verra les changements dans 1 à 2 minutes.');render()}catch(x){alert('Échec : '+x.message+'. Vérifie ton jeton dans Réglages.')}b.disabled=false;b.textContent=t};
 $('#rg').onclick=()=>{const t=prompt('Jeton GitHub pour publier (laisse vide pour garder l\'actuel)');if(t&&t.trim()){try{localStorage.setItem('em_tok',t.trim())}catch(e){}};[['tel','Numéro affiché'],['wa','Numéro WhatsApp (chiffres, ex. 243818977321)'],['mail','Email'],['fb','Lien Facebook'],['ig','Lien Instagram'],['tt','Lien TikTok'],['yt','Lien YouTube']].every(([k,l])=>{const v=prompt(l,C(k));if(v===null)return false;S.c[k]=v.trim();return true});up(()=>0)};
-(async()=>{let adm=false;try{adm=!!localStorage.getItem('em_e')||location.hash==='#edit'}catch(e){}let d=adm?await load():null;if(!d){try{const q=await fetch('data.json?'+Date.now());if(q.ok)d=await q.json()}catch(e){}}if(d)S=Object.assign(S,d);try{if(location.hash==='#edit'||localStorage.getItem('em_e'))E=true}catch(e){}render();
+/* accès propriétaire : lien secret #gerer + mot de passe */
+const PH='85091b2c5a8675b6c7d378a9700ae21e2eb88576c214e088cb7e7c4fe6f7a2ce';
+async function sha(t){const x=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(t));return[...new Uint8Array(x)].map(n=>n.toString(16).padStart(2,'0')).join('')}
+(async()=>{let adm=false;try{adm=!!localStorage.getItem('em_e')}catch(e){}let d=adm?await load():null;if(!d){try{const q=await fetch('data.json?'+Date.now());if(q.ok)d=await q.json()}catch(e){}}if(d)S=Object.assign(S,d);if(adm)E=true;render();
 if('IntersectionObserver'in window){const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('on');io.unobserve(e.target)}}),{threshold:.05});document.querySelectorAll('.rv').forEach(s=>io.observe(s))}else document.querySelectorAll('.rv').forEach(s=>s.classList.add('on'))})();
 </script>
 </body>
