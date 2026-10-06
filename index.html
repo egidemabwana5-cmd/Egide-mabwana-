@@ -255,9 +255,10 @@ $('#as').replaceChildren(multi('about',3,['PHOTO « À PROPOS »\nUne photo de t
 $('#ug').replaceChildren(...UN.map((u,i)=>h('div',{},single('u'+i,'4/5',u[2]),h('h3',{},u[0]),h('p',{'data-k':'u'+i},u[1]))));
 /* projets */
 const pg=$('#pg');pg.replaceChildren();
-S.p.forEach((p,i)=>{if(!E&&!p.i&&!p.t)return;
-pg.append(h('div',{class:'pc'},tile(S.p,i,'i','4/3','COUVERTURE DU PROJET '+(i+1)+'\nLa photo principale du projet',openP),h('div',{class:'pn'},'PROJET '+String(i+1).padStart(2,'0')),h('h3',{},p.t||(E?'Titre du projet':'')),h('p',{},[p.c,p.d].filter(Boolean).join(' · ')),h('button',{class:'btn',onclick:()=>openP(p)},'VOIR LE PROJET →')))});
-if(E)pg.append(addBtn('+ AJOUTER UN PROJET','4/3',()=>up(()=>S.p.push({}))));
+const vide=p=>!Object.values(p).some(v=>Array.isArray(v)?v.length:v);
+if(E){while(S.p.length>1&&vide(S.p[S.p.length-1])&&vide(S.p[S.p.length-2]))S.p.pop();if(!S.p.length||!vide(S.p[S.p.length-1]))S.p.push({})}
+let n=0;S.p.forEach((p,i)=>{if(!E&&!p.i&&!p.t)return;n++;
+pg.append(h('div',{class:'pc'},tile(S.p,i,'i','4/3','NOUVEAU PROJET\nLa photo principale du projet',openP),h('div',{class:'pn'},'PROJET '+String(n).padStart(2,'0')),h('h3',{},p.t||(E?'Titre du projet':'')),h('p',{},[p.c,p.d].filter(Boolean).join(' · ')),h('button',{class:'btn',onclick:()=>openP(p)},'VOIR LE PROJET →')))});
 /* galerie */
 $('#gf').replaceChildren(...['Tous',...CAT].map(c=>h('button',{class:c===F?'on':'',onclick:()=>{F=c;render()}},c)));
 const gg=$('#gg');gg.replaceChildren();
